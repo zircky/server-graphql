@@ -17,27 +17,27 @@ export class User {
 	@Field()
 	email: string
 
-	@Field()
-	password: string
+	@Field({ nullable: true })
+	password?: string
 
 	@Field()
-	isAdmin: boolean
+	isAdmin?: boolean
 
 	@Field()
-	name: string
+	name?: string
+
+	@Field({ nullable: true })
+	avatarPath?: string
 
 	@Field()
-	avatarPath: string
+	phone?: string
 
-	@Field()
-	phone: string
+	@Field(type => [Order], { nullable: true })
+	orders?: Order[]
 
-	@Field(type => [Order])
-	orders: Order[]
+	@Field(type => [Product], { nullable: true })
+	favorites?: Product[]
 
-	@Field(type => [Product])
-	favorites: Product[]
-
-	@Field(type => [Review])
-	reviews: Review[]
+	@Field(type => [Review], { nullable: true })
+	reviews?: Review[]
 }

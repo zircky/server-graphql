@@ -6,22 +6,22 @@ import { CreateUserInput } from './dto/create-user.input'
 import { CurrentUser } from '../auth/decorators/user.decorator'
 import { Auth } from '../auth/decorators/auth.decorator'
 
-@Resolver()
+@Resolver(of => User)
 export class UserResolver {
 	constructor(private readonly userService: UserService) {}
 
-	@Query(() => User)
+	@Query(() => [User])
 	async getAll() {
 		return this.userService.getAll()
 	}
 
-	@Query(() => User)
+	@Query(returns => User)
 	@Auth()
 	async getProfile(@CurrentUser('id') id: number) {
 		return this.userService.byId(id)
 	}
 
-	@Mutation(() => User)
+	@Mutation(returns => User)
 	@UsePipes(new ValidationPipe())
 	@HttpCode(200)
 	@Auth()

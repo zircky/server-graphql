@@ -74,18 +74,18 @@ type User {
   createdAt: DateTime!
   updatedAt: DateTime!
   email: String!
-  password: String!
+  password: String
   isAdmin: Boolean!
   name: String!
-  avatarPath: String!
+  avatarPath: String
   phone: String!
-  orders: [Order!]!
-  favorites: [Product!]!
-  reviews: [Review!]!
+  orders: [Order!]
+  favorites: [Product!]
+  reviews: [Review!]
 }
 
 type Query {
-  getAll: User!
+  getAll: [User!]!
   getProfile: User!
   product(id: Int!): Product!
   category(id: Int!): Category!
