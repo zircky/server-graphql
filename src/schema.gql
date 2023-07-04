@@ -85,12 +85,25 @@ type User {
 }
 
 type Query {
-  getAll: [User!]!
+  getAll(queryDto: GetAllProductInput!): [Product!]!
   getProfile: User!
-  product(id: Int!): Product!
+  getSimilar(id: String!): Product!
+  getProductBySlug(slug: String!): Product!
+  getProductByCategory(categorySlug: String!): Product!
+  getProduct(id: String!): Product!
   category(id: Int!): Category!
   review(id: Int!): Review!
   order(id: Int!): Order!
+}
+
+input GetAllProductInput {
+  page: String!
+  pagePage: String!
+  searchTerm: String!
+  ratings: String!
+  minPrice: String!
+  maxPrice: String!
+  categoryId: String!
 }
 
 type Mutation {
@@ -99,12 +112,12 @@ type Mutation {
   login(input: CreateAuthInput!): User!
   getNewTokens(input: UpdateRefreshTokenInput!): User!
   register(input: CreateAuthInput!): User!
-  createProduct(createProductInput: CreateProductInput!): Product!
-  updateProduct(updateProductInput: UpdateProductInput!): Product!
-  removeProduct(id: Int!): Product!
-  createCategory(createCategoryInput: CreateCategoryInput!): Category!
-  updateCategory(updateCategoryInput: UpdateCategoryInput!): Category!
-  removeCategory(id: Int!): Category!
+  createProduct: Product!
+  updateProduct(id: String!, input: CreateProductInput!): Product!
+  deleteProduct(id: String!): Product!
+  create: Category!
+  update(id: Float!, input: CreateCategoryInput!): Category!
+  delete(id: Int!): Category!
   createReview(createReviewInput: CreateReviewInput!): Review!
   updateReview(updateReviewInput: UpdateReviewInput!): Review!
   removeReview(id: Int!): Review!
@@ -132,25 +145,15 @@ input UpdateRefreshTokenInput {
 }
 
 input CreateProductInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-input UpdateProductInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
+  name: String!
+  price: Float!
+  description: String!
+  images: String!
+  categoryId: Float!
 }
 
 input CreateCategoryInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-input UpdateCategoryInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
+  name: String!
 }
 
 input CreateReviewInput {

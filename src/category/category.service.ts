@@ -1,26 +1,61 @@
-import { Injectable } from '@nestjs/common';
-import { CreateCategoryInput } from './dto/create-category.input';
-import { UpdateCategoryInput } from './dto/update-category.input';
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { PrismaService } from '../prisma.service'
+import { returnCategoryObject } from './return-category.object'
+import { CreateCategoryInput } from './dto/create-category.input'
+import { generateSlug } from '../utils/generate-slug'
 
 @Injectable()
 export class CategoryService {
-  create(createCategoryInput: CreateCategoryInput) {
-    return 'This action adds a new category';
-  }
+	constructor(private prisma: PrismaService) {}
 
-  findAll() {
-    return `This action returns all category`;
-  }
+	async byId(id: number) {
+		const category = await this.prisma.category.findUnique({
+			where: { id },
+			select: returnCategoryObject
+		})
+		if (!category) {
+			throw new NotFoundException(`Category with id ${id} not found`)
+		}
+		return category
+	}
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
-  }
+	async bySlug(slug: string) {
+		const category = await this.prisma.category.findUnique({
+			where: { slug },
+			select: returnCategoryObject
+		})
+		if (!category) {
+			throw new NotFoundException(`Category with slug ${slug} not found`)
+		}
+		return category
+	}
 
-  update(id: number, updateCategoryInput: UpdateCategoryInput) {
-    return `This action updates a #${id} category`;
-  }
+	async getAll() {
+		return this.prisma.category.findMany({ select: returnCategoryObject })
+	}
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
-  }
+	async create() {
+		return this.prisma.category.create({
+			data: {
+				name: '',
+				slug: ''
+			}
+		})
+	}
+
+	async update(id: number, input: CreateCategoryInput) {
+		return this.prisma.category.update({
+			where: { id },
+			data: {
+				name: input.name,
+				slug: generateSlug(input.name)
+			}
+		})
+	}
+
+	async delete(id: number) {
+		return this.prisma.category.delete({
+			where: { id }
+		})
+	}
 }

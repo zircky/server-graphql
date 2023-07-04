@@ -1,35 +1,65 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
-import { ProductService } from './product.service';
-import { Product } from './entities/product.entity';
-import { CreateProductInput } from './dto/create-product.input';
-import { UpdateProductInput } from './dto/update-product.input';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
+import { ProductService } from './product.service'
+import { Product } from './entities/product.entity'
+import { HttpCode, UsePipes, ValidationPipe } from '@nestjs/common'
+import { CreateProductInput } from './dto/create-product.input'
+import { Auth } from '../auth/decorators/auth.decorator'
+import { GetAllProductInput } from './dto/get-all.product.input'
 
 @Resolver(() => Product)
 export class ProductResolver {
-  constructor(private readonly productService: ProductService) {}
+	constructor(private readonly productService: ProductService) {}
 
-  @Mutation(() => Product)
-  createProduct(@Args('createProductInput') createProductInput: CreateProductInput) {
-    return this.productService.create(createProductInput);
-  }
+	@UsePipes(new ValidationPipe())
+	@Query(() => [Product])
+	async getAll(@Args('queryDto') queryDto: GetAllProductInput) {
+		return this.productService.getAll(queryDto)
+	}
 
-  @Query(() => [Product], { name: 'product' })
-  findAll() {
-    return this.productService.findAll();
-  }
+	@Query(() => Product)
+	async getSimilar(@Args('id') id: string) {
+		return this.productService.getSimilar(+id)
+	}
 
-  @Query(() => Product, { name: 'product' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.productService.findOne(id);
-  }
+	@Query(() => Product)
+	async getProductBySlug(@Args('slug') slug: string) {
+		return this.productService.bySlug(slug)
+	}
 
-  @Mutation(() => Product)
-  updateProduct(@Args('updateProductInput') updateProductInput: UpdateProductInput) {
-    return this.productService.update(updateProductInput.id, updateProductInput);
-  }
+	@Query(() => Product)
+	async getProductByCategory(@Args('categorySlug') categorySlug: string) {
+		return this.productService.byCategory(categorySlug)
+	}
 
-  @Mutation(() => Product)
-  removeProduct(@Args('id', { type: () => Int }) id: number) {
-    return this.productService.remove(id);
-  }
+	@Mutation(() => Product)
+	@UsePipes(new ValidationPipe())
+	@HttpCode(200)
+	@Auth('admin')
+	async createProduct() {
+		return this.productService.create()
+	}
+
+	@Mutation(() => Product)
+	@UsePipes(new ValidationPipe())
+	@HttpCode(200)
+	@Auth('admin')
+	async updateProduct(
+		@Args('id') id: string,
+		@Args('input') input: CreateProductInput
+	) {
+		return this.productService.update(+id, input)
+	}
+
+	@Mutation(() => Product)
+	@HttpCode(200)
+	@Auth('admin')
+	async deleteProduct(@Args('id') id: string) {
+		return this.productService.delete(+id)
+	}
+
+	@Query(() => Product)
+	@Auth('admin')
+	async getProduct(@Args('id') id: string) {
+		return this.productService.byId(+id)
+	}
 }

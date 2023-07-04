@@ -9,6 +9,8 @@ import { ReviewModule } from './review/review.module'
 import { OrderModule } from './order/order.module'
 import { ConfigModule } from '@nestjs/config'
 import { PrismaService } from './prisma.service'
+import { PaginationModule } from './pagination/pagination.module';
+import { StatisticsModule } from './statistics/statistics.module';
 
 @Module({
 	imports: [
@@ -23,7 +25,9 @@ import { PrismaService } from './prisma.service'
 		ProductModule,
 		CategoryModule,
 		ReviewModule,
-		OrderModule
+		OrderModule,
+		PaginationModule,
+		StatisticsModule
 	],
 	controllers: [],
 	providers: [PrismaService]
